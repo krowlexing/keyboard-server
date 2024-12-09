@@ -1,8 +1,15 @@
-use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::post, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post},
+    Json, Router,
+};
 
 use crate::{
     db,
     dto::users::{UserClaim, UserCreds},
+    extractors::jwt::Jwt,
     Db,
 };
 
@@ -10,6 +17,7 @@ pub fn router(db: Db) -> Router {
     Router::new()
         .route("/login", post(login))
         .route("/register", post(register))
+        .route("/validate", get(validate))
         .with_state(db)
 }
 
@@ -35,5 +43,16 @@ async fn login(State(db): State<Db>, Json(creds): Json<UserCreds>) -> impl IntoR
         Ok(user) => (StatusCode::OK, UserClaim { user_id: user.id }.sign()).into_response(),
         Err(WrongPassword) => (StatusCode::UNAUTHORIZED, Json("wrong password")).into_response(),
         Err(SqlError(e)) => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+    }
+}
+
+async fn validate(State(db): State<Db>, Jwt(user_id): Jwt) -> impl IntoResponse {
+    match db.users.exists(user_id).await {
+        Ok(true) => StatusCode::OK.into_response(),
+        Ok(false) => StatusCode::UNAUTHORIZED.into_response(),
+        Err(e) => {
+            println!("{e}");
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
     }
 }

@@ -45,6 +45,10 @@ impl Users {
     pub async fn find_user(&self, username: &str, password: &str) -> Result<User, LoginError> {
         find_user(&self.pool, username, password).await
     }
+
+    pub async fn exists(&self, user_id: i32) -> Result<bool, sqlx::Error> {
+        exists(&self.pool, user_id).await
+    }
 }
 
 pub type SqlResult = Result<PgQueryResult, sqlx::Error>;
@@ -115,6 +119,14 @@ async fn find_user(pool: &PgPool, username: &str, password: &str) -> Result<User
         Ok(None) => Err(LoginError::WrongPassword),
         Err(e) => Err(LoginError::SqlError(e)),
     }
+}
+
+async fn exists(pool: &PgPool, user_id: i32) -> Result<bool, sqlx::Error> {
+    sqlx::query_as("SELECT * FROM users WHERE id = $1")
+        .bind(user_id)
+        .fetch_optional(pool)
+        .await
+        .map(|user: Option<User>| user.is_some())
 }
 
 #[derive(FromRow, Serialize, Deserialize)]
