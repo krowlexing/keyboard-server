@@ -20,7 +20,8 @@ impl Exercises {
                 "CREATE TABLE IF NOT EXISTS exercises(
                 id SERIAL PRIMARY KEY,
                 text TEXT,
-                level INTEGER
+                level INTEGER,
+                CONSTRAINT fk_name FOREIGN KEY (level) REFERENCES difficulties(id)
             );",
             )
             .await

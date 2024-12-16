@@ -22,7 +22,9 @@ impl Stats {
                 chars INTEGER,
                 time INTEGER,
                 errors INTEGER,
-                created TIMESTAMPTZ DEFAULT NOW()
+                created TIMESTAMPTZ DEFAULT NOW(),
+                CONSTRAINT fk_name_1 FOREIGN KEY (user_id) REFERENCES users(id),
+                CONSTRAINT fk_name_2 FOREIGN KEY (exercise_id) REFERENCES exercises(id)
             );",
             )
             .await

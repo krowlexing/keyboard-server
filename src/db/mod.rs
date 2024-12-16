@@ -32,9 +32,9 @@ impl Db {
 
     async fn init(&self) -> Result<(), sqlx::Error> {
         self.users.create_table().await?;
+        self.difficulties.create_table().await?;
         self.exercises.create_table().await?;
         self.stats.create_table().await?;
-        self.difficulties.create_table().await?;
         Ok(())
     }
 }
