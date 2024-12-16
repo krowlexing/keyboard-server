@@ -1,5 +1,5 @@
 # keyboard-server
 
-`docker compose up - d`
+`docker compose up -d`
 
 `cargo run`

@@ -95,6 +95,13 @@ pub enum LoginError {
     SqlError(sqlx::Error),
 }
 
+// CREATE TABLE stats {
+//     id SERIAL PRIMARY KEY,
+//     user_id INTEGER,
+//     exercise_id INTEGER,
+//     time INTEGER,
+//     errors INTEGER
+// }
 impl From<sqlx::Error> for LoginError {
     fn from(value: sqlx::Error) -> Self {
         LoginError::SqlError(value)
