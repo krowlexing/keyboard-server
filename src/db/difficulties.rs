@@ -71,6 +71,12 @@ impl Difficulties {
             .execute(&self.pool)
             .await
     }
+
+    pub async fn all(&self) -> Result<Vec<DifficultyData>, sqlx::Error> {
+        sqlx::query_as("SELECT * FROM difficulties;")
+            .fetch_all(&self.pool)
+            .await
+    }
 }
 
 async fn create(pool: &PgPool) -> Result<i32, sqlx::Error> {
