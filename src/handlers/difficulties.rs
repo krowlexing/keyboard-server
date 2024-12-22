@@ -50,7 +50,7 @@ async fn update(
     }
 }
 
-async fn all(State(db): State<Db>, _: Admin) -> impl IntoResponse {
+async fn all(State(db): State<Db>, _: Jwt) -> impl IntoResponse {
     let result = db.difficulties.all().await;
     match result {
         Ok(exercises) => Json(exercises).into_response(),
