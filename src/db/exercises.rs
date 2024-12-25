@@ -49,12 +49,24 @@ impl Exercises {
 }
 
 async fn create(pool: &PgPool, exercise: NewExercise) -> Result<i32, sqlx::Error> {
+    if count(pool, exercise.level).await? >= 15 {
+        return Err(sqlx::Error::RowNotFound);
+    }
+
     sqlx::query_as("INSERT INTO exercises(text, level) VALUES ($1, $2) RETURNING id;")
         .bind(exercise.text)
         .bind(exercise.level)
         .fetch_one(pool)
         .await
         .map(|x: (i32,)| x.0)
+}
+
+async fn count(pool: &PgPool, level: i32) -> Result<i64, sqlx::Error> {
+    sqlx::query_as("SELECT COUNT(*) FROM exercises WHERE level = $1;")
+        .bind(level)
+        .fetch_one(pool)
+        .await
+        .map(|x: (i64,)| x.0)
 }
 
 async fn all(pool: &PgPool) -> Result<Vec<Exercise>, sqlx::Error> {

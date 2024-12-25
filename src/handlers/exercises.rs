@@ -32,6 +32,9 @@ async fn create(
 
     match result {
         Ok(id) => (StatusCode::CREATED, Json(id)).into_response(),
+        Err(sqlx::Error::RowNotFound) => {
+            (StatusCode::IM_A_TEAPOT, Json("too many exercises")).into_response()
+        }
         Err(e) => {
             report_sql_error(e, "error creating exercise");
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
