@@ -73,7 +73,7 @@ impl Difficulties {
     }
 
     pub async fn all(&self) -> Result<Vec<DifficultyData>, sqlx::Error> {
-        sqlx::query_as("SELECT * FROM difficulties;")
+        sqlx::query_as("SELECT * FROM difficulties ORDER BY id ASC;")
             .fetch_all(&self.pool)
             .await
     }
