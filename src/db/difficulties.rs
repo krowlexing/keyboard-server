@@ -28,11 +28,11 @@ impl Difficulties {
 
         let count = self.count().await?;
         if count == 0 {
-            self.create_x(50, 200, 5, 15, "15").await?;
-            self.create_x(50, 200, 5, 11, "145").await?;
-            self.create_x(50, 200, 5, 9, "125").await?;
-            self.create_x(50, 200, 5, 7, "1235").await?;
-            self.create_x(50, 200, 5, 5, "12345").await?;
+            self.create_x(25, 50, 5, 15, "15").await?;
+            self.create_x(40, 80, 4, 11, "145").await?;
+            self.create_x(60, 120, 3, 9, "125").await?;
+            self.create_x(100, 150, 2, 7, "1235").await?;
+            self.create_x(150, 200, 1, 5, "12345").await?;
         }
 
         Ok(0)
