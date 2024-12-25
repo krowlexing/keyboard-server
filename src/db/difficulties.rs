@@ -28,11 +28,11 @@ impl Difficulties {
 
         let count = self.count().await?;
         if count == 0 {
-            self.create_default().await?;
-            self.create_default().await?;
-            self.create_default().await?;
-            self.create_default().await?;
-            self.create_default().await?;
+            self.create_x(50, 200, 5, 15, "15").await?;
+            self.create_x(50, 200, 5, 11, "145").await?;
+            self.create_x(50, 200, 5, 9, "125").await?;
+            self.create_x(50, 200, 5, 7, "1235").await?;
+            self.create_x(50, 200, 5, 5, "12345").await?;
         }
 
         Ok(0)
@@ -43,6 +43,17 @@ impl Difficulties {
             .fetch_one(&self.pool)
             .await
             .map(|x: (i64,)| x.0)
+    }
+
+    pub async fn create_x(
+        &self,
+        min: i32,
+        max: i32,
+        errors: i32,
+        time_limit: i32,
+        zones: &str,
+    ) -> Result<i32, sqlx::Error> {
+        create_x(&self.pool, min, max, errors, time_limit, zones).await
     }
 
     pub async fn create_default(&self) -> Result<i32, sqlx::Error> {
@@ -86,6 +97,25 @@ async fn create(pool: &PgPool) -> Result<i32, sqlx::Error> {
         .bind(5)
         .bind(1)
         .bind("12345")
+        .fetch_one(pool)
+        .await
+        .map(|x: (i32,)| x.0)
+}
+
+async fn create_x(
+    pool: &PgPool,
+    min: i32,
+    max: i32,
+    errors: i32,
+    time_limit: i32,
+    zones: &str,
+) -> Result<i32, sqlx::Error> {
+    sqlx::query_as("INSERT INTO difficulties(min_chars, max_chars, errors, time_limit, zones) VALUES ($1, $2, $3, $4, $5) RETURNING id;")
+        .bind(min)
+        .bind(max)
+        .bind(errors)
+        .bind(time_limit)
+        .bind(zones)
         .fetch_one(pool)
         .await
         .map(|x: (i32,)| x.0)
